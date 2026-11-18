@@ -1,0 +1,52 @@
+<mxfile host="65bd71144e">
+    <diagram id="rzt7x8D9qhhuySY8UUlw" name="Page-1">
+        <mxGraphModel dx="1272" dy="937" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="Hfo8JxA3QlB1oeDNfO6f-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+                    <mxGeometry height="670" width="650" x="100" y="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="t" parent="1" style="html=1;fontStyle=1;fontSize=20;align=center;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Validation and Operations" vertex="1">
+                    <mxGeometry height="50" width="300" x="260" y="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="build" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="CMake Build Matrix&#xa;Pico · STM32H5 · Host&#xa;UF2 / ELF / test binaries" vertex="1">
+                    <mxGeometry height="90" width="250" x="285" y="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="unit" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Standalone PQC Tests&#xa;tests/test_pqc_standalone.c" vertex="1">
+                    <mxGeometry height="90" width="250" x="125" y="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="security" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Adversarial Security Suite&#xa;10 scenarios: tamper, replay, forgery" vertex="1">
+                    <mxGeometry height="90" width="280" x="460" y="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="bench" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Benchmark + Stack Analysis&#xa;cycle counts · latency · watermark" vertex="1">
+                    <mxGeometry height="90" width="280" x="110" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="tvla" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="TVLA Timing Evaluation&#xa;leakage samples / physical checks" vertex="1">
+                    <mxGeometry height="90" width="280" x="460" y="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="report" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Reports and Artifacts&#xa;tools/security · tools/benchmarks" vertex="1">
+                    <mxGeometry height="75" width="300" x="260" y="600" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" edge="1" parent="1" source="build" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="unit">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" edge="1" parent="1" source="build" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="security" value="firmware frames">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" edge="1" parent="1" source="unit" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="bench">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" edge="1" parent="1" source="security" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="tvla">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" edge="1" parent="1" source="bench" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="report">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" edge="1" parent="1" source="tvla" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="report">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

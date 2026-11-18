@@ -1,0 +1,49 @@
+<mxfile host="65bd71144e">
+    <diagram id="W716sbmysSpawbqwSUIc" name="Page-1">
+        <mxGraphModel dx="1821" dy="1341" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="q0hzQALpGtyOpbVMTEzt-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+                    <mxGeometry height="730" width="850" as="geometry"/>
+                </mxCell>
+                <mxCell id="t" parent="1" style="html=1;fontStyle=1;fontSize=20;align=center;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Host Gateway and Authority" vertex="1">
+                    <mxGeometry height="50" width="300" x="275" y="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="cli" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="qsac_server.py&#xa;interactive authority CLI" vertex="1">
+                    <mxGeometry height="75" width="320" x="160" y="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="pqc" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="tools/gateway/pqc&#xa;ML-KEM-512 + ML-DSA-44" vertex="1">
+                    <mxGeometry height="85" width="250" x="195" y="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="transport" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Serial Transport&#xa;COM/TTY · frame encode/decode" vertex="1">
+                    <mxGeometry height="85" width="290" x="175" y="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="device" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" value="QSAC Device&#xa;UART bridge + secure session" vertex="1">
+                    <mxGeometry height="85" width="250" x="555" y="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="bench" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="benchmarks.py&#xa;cycle counts + stack usage" vertex="1">
+                    <mxGeometry height="75" width="250" x="45" y="630" as="geometry"/>
+                </mxCell>
+                <mxCell id="sec" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="security / physical checks&#xa;fuzzing · TVLA · diagnostics" vertex="1">
+                    <mxGeometry height="75" width="280" x="355" y="630" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" edge="1" parent="1" source="cli" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="transport">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" edge="1" parent="1" source="pqc" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="cli" value="keys / tokens">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" edge="1" parent="1" source="transport" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="device" value="UART / USB">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" edge="1" parent="1" source="bench" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="transport">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" edge="1" parent="1" source="sec" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="transport">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

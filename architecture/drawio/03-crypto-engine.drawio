@@ -1,0 +1,46 @@
+<mxfile host="65bd71144e">
+    <diagram id="AGlsYl1lfS7Yzkr9IfKV" name="Page-1">
+        <mxGraphModel dx="1272" dy="937" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="1hsekSf3B9TMgViLW_H_-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+                    <mxGeometry height="550" width="990" as="geometry"/>
+                </mxCell>
+                <mxCell id="t" parent="1" style="html=1;fontStyle=1;fontSize=20;align=center;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Cryptographic Engine" vertex="1">
+                    <mxGeometry height="50" width="280" x="360" y="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="api" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="crypto_api.h&#xa;unified cryptographic API" vertex="1">
+                    <mxGeometry height="70" width="300" x="350" y="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="classic" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Classical Primitives&#xa;ECC P-256 · ECDH · ECDSA&#xa;SHA-256 · SHA-3 · HKDF" vertex="1">
+                    <mxGeometry height="100" width="260" x="50" y="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="pqc" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Post-Quantum Primitives&#xa;ML-KEM-512 (FIPS 203)&#xa;ML-DSA-44 (FIPS 204)" vertex="1">
+                    <mxGeometry height="100" width="260" x="370" y="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="aead" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Session Protection&#xa;AES-256-GCM + GHASH&#xa;monotonic anti-replay counter" vertex="1">
+                    <mxGeometry height="100" width="260" x="690" y="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="backend" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Backend Dispatch&#xa;ATECC608B / OpenSSL / software" vertex="1">
+                    <mxGeometry height="70" width="300" x="190" y="460" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" edge="1" parent="1" source="api" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="classic">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" edge="1" parent="1" source="api" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="pqc">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" edge="1" parent="1" source="api" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="aead">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" edge="1" parent="1" source="classic" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="backend" value="platform selection">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" edge="1" parent="1" source="pqc" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="backend">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

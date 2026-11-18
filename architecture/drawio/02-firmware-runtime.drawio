@@ -1,0 +1,43 @@
+<mxfile host="65bd71144e">
+    <diagram id="wsOg-dPnpRN-0kh39ln9" name="Page-1">
+        <mxGraphModel dx="1530" dy="1128" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="7CoDPKvVEHqkX9uCeeSR-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+                    <mxGeometry height="670" width="410" x="220" y="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="t" parent="1" style="html=1;fontStyle=1;fontSize=20;align=center;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Firmware Runtime Architecture" vertex="1">
+                    <mxGeometry height="50" width="340" x="255" y="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="boot" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Secure Boot&#xa;secure_boot.c" vertex="1">
+                    <mxGeometry height="70" width="180" x="335" y="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="main" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="main.c&#xa;system init + self-tests" vertex="1">
+                    <mxGeometry height="70" width="220" x="315" y="195" as="geometry"/>
+                </mxCell>
+                <mxCell id="bridge" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="UART Bridge&#xa;frame parser + opcode dispatch" vertex="1">
+                    <mxGeometry height="70" width="240" x="305" y="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="state" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Access State Machine&#xa;INIT → AUTHENTICATED → ACTIVE" vertex="1">
+                    <mxGeometry height="80" width="260" x="295" y="420" as="geometry"/>
+                </mxCell>
+                <mxCell id="session" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Session Loop&#xa;encrypted commands + anti-replay" vertex="1">
+                    <mxGeometry height="80" width="240" x="305" y="560" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" edge="1" parent="1" source="boot" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="main">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" edge="1" parent="1" source="main" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="bridge">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" edge="1" parent="1" source="bridge" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="state" value="token events">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" edge="1" parent="1" source="state" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="session" value="established session">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

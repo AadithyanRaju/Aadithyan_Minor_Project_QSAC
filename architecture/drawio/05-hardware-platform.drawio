@@ -1,0 +1,43 @@
+<mxfile host="65bd71144e">
+    <diagram id="n_Swl72gNU4WaJXJjO8I" name="Page-1">
+        <mxGraphModel dx="1821" dy="1341" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="VNI_WsuNLNp6BSTH4C1f-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+                    <mxGeometry height="560" width="910" x="20" y="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="t" parent="1" style="html=1;fontStyle=1;fontSize=20;align=center;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Hardware Abstraction and Platform Targets" vertex="1">
+                    <mxGeometry height="50" width="440" x="260" y="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="hal" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="HAL API&#xa;clocks · UART · I2C · GPIO · cycle counter" vertex="1">
+                    <mxGeometry height="80" width="360" x="300" y="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="pico" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Raspberry Pi Pico / RP2040&#xa;Cortex-M0+ · 125 MHz · 264 KB SRAM&#xa;pico_hal.c + ROSC fallback" vertex="1">
+                    <mxGeometry height="100" width="260" x="40" y="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="stm" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="STM32H5 Nucleo&#xa;Cortex-M4 · hardware crypto/HSM&#xa;stm32h5_hal.c" vertex="1">
+                    <mxGeometry height="100" width="260" x="350" y="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="host" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Host Simulation&#xa;OpenSSL + host_hal.c&#xa;Linux / macOS" vertex="1">
+                    <mxGeometry height="100" width="260" x="640" y="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="hsm" parent="1" style="html=1;whiteSpace=wrap;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="ATECC608B&#xa;I2C0 GP4/GP5 · TRNG · key slots&#xa;ECC acceleration" vertex="1">
+                    <mxGeometry height="90" width="260" x="40" y="460" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" edge="1" parent="1" source="hal" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="pico">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" edge="1" parent="1" source="hal" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="stm">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" edge="1" parent="1" source="hal" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="host">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" edge="1" parent="1" source="pico" style="html=1;edgeStyle=orthogonalEdgeStyle;" target="hsm" value="I2C">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
