@@ -8,12 +8,28 @@
 #include <string.h>
 #include <stdlib.h>
 
+#if defined(PICO_ON_DEVICE) || defined(PICO_BOARD) || defined(LIB_PICO_STDLIB)
+#include "pico/stdlib.h"
+#endif
+
+#if __has_include("crypto_api.h")
+#include "crypto_api.h"
+#include "fips202.h"
+#include "CRYPTO_PQC_MLKEM512_kem.h"
+#include "CRYPTO_PQC_MLDSA44_sign.h"
+#elif __has_include("crypto/crypto_api.h")
+#include "crypto/crypto_api.h"
+#include "crypto/fips202.h"
+#include "crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_kem.h"
+#include "crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_sign.h"
+#else
 #include "../src/crypto/crypto_api.h"
 #include "../src/crypto/fips202.h"
 #include "../src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_kem.h"
 #include "../src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_sign.h"
+#endif
 
-/* Host random bytes generator */
+/* Host / Test random bytes generator */
 qsac_status_t qsac_random_bytes(uint8_t *buf, size_t len) {
     for (size_t i = 0; i < len; ++i) {
         buf[i] = (uint8_t)(rand() & 0xFF);
@@ -22,6 +38,9 @@ qsac_status_t qsac_random_bytes(uint8_t *buf, size_t len) {
 }
 
 int main(void) {
+#if defined(PICO_ON_DEVICE) || defined(PICO_BOARD) || defined(LIB_PICO_STDLIB)
+    stdio_init_all();
+#endif
     srand(42);
     printf("=== Starting PQC Unit Tests on Host ===\n");
 

@@ -6,13 +6,28 @@
 #   ./flash.sh [file] [interface]
 #
 # Examples:
-#   ./flash.sh ../build/qsac_firmware.uf2 pico       # Raspberry Pi Pico (default)
-#   ./flash.sh ../build/qsac_firmware.uf2 picotool   # Pico via picotool
-#   ./flash.sh ../build/qsac_firmware.bin openocd     # OpenOCD (SWD debug probe)
+#   ./flash.sh ../build-pico/qsac_firmware.uf2 pico       # Raspberry Pi Pico (default)
+#   ./flash.sh ../build-pico/qsac_firmware.uf2 picotool   # Pico via picotool
+#   ./flash.sh ../build-pico/qsac_firmware.bin openocd     # OpenOCD (SWD debug probe)
 
 set -euo pipefail
 
-FIRMWARE="${1:-../build/qsac_firmware.uf2}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Search for firmware if not explicitly passed
+if [ -z "${1:-}" ]; then
+    if [ -f "$WORKSPACE_ROOT/build-pico/qsac_firmware.uf2" ]; then
+        FIRMWARE="$WORKSPACE_ROOT/build-pico/qsac_firmware.uf2"
+    elif [ -f "$WORKSPACE_ROOT/build/qsac_firmware.uf2" ]; then
+        FIRMWARE="$WORKSPACE_ROOT/build/qsac_firmware.uf2"
+    else
+        FIRMWARE="$WORKSPACE_ROOT/build-pico/qsac_firmware.uf2"
+    fi
+else
+    FIRMWARE="$1"
+fi
+
 INTERFACE="${2:-pico}"
 
 echo "========================================="
@@ -26,11 +41,9 @@ if [ ! -f "$FIRMWARE" ]; then
     echo "Error: Firmware not found: $FIRMWARE"
     echo ""
     echo "Build first:"
-    echo "  # Host simulation:"
-    echo "  cd firmware/build && cmake .. && make"
-    echo ""
-    echo "  # Pico hardware:"
-    echo "  cd firmware/build && cmake .. -DQSAC_TARGET_HOST=OFF -DQSAC_TARGET_PICO=ON && make"
+    echo "  # Raspberry Pi Pico firmware:"
+    echo "  cmake --preset pico"
+    echo "  cmake --build --preset pico"
     exit 1
 fi
 

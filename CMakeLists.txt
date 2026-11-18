@@ -17,11 +17,62 @@ if(QSAC_TARGET_PICO)
     if(NOT DEFINED PICO_SDK_PATH AND DEFINED ENV{PICO_SDK_PATH})
         set(PICO_SDK_PATH "$ENV{PICO_SDK_PATH}")
     elseif(NOT DEFINED PICO_SDK_PATH)
-        set(PICO_SDK_PATH "C:/Users/aadit/Documents/Codex/pico/pico-sdk")
+        # Search common standard installation directories across platforms
+        set(PICO_SDK_SEARCH_DIRS
+            "$ENV{PICO_SDK_PATH}"
+            "$ENV{USERPROFILE}/Documents/Codex/pico/pico-sdk"
+            "$ENV{USERPROFILE}/.pico-sdk/sdk/2.1.1"
+            "$ENV{USERPROFILE}/.pico-sdk/sdk/2.1.0"
+            "$ENV{USERPROFILE}/.pico-sdk/sdk/2.0.0"
+            "$ENV{USERPROFILE}/pico/pico-sdk"
+            "$ENV{HOME}/.pico-sdk/sdk/2.1.1"
+            "$ENV{HOME}/.pico-sdk/sdk/2.1.0"
+            "$ENV{HOME}/.pico-sdk/sdk/2.0.0"
+            "$ENV{HOME}/pico/pico-sdk"
+            "C:/pico/pico-sdk"
+            "/usr/share/pico-sdk"
+            "/opt/pico-sdk"
+        )
+        foreach(_pico_cand IN LISTS PICO_SDK_SEARCH_DIRS)
+            if(_pico_cand AND EXISTS "${_pico_cand}/pico_sdk_init.cmake")
+                set(PICO_SDK_PATH "${_pico_cand}")
+                break()
+            endif()
+        endforeach()
     endif()
-    if(NOT EXISTS "${PICO_SDK_PATH}/pico_sdk_init.cmake")
-        message(FATAL_ERROR "Pico SDK not found at: ${PICO_SDK_PATH}")
+
+    if(NOT DEFINED PICO_SDK_PATH OR NOT EXISTS "${PICO_SDK_PATH}/pico_sdk_init.cmake")
+        message(FATAL_ERROR
+            "Raspberry Pi Pico SDK not found!\n"
+            "Please specify the SDK path using either:\n"
+            "  1. -DPICO_SDK_PATH=<path_to_pico_sdk>\n"
+            "  2. set PICO_SDK_PATH environment variable (e.g. export PICO_SDK_PATH=/path/to/pico-sdk)"
+        )
     endif()
+
+    # Auto-detect ARM toolchain path if not in system PATH
+    if(NOT DEFINED PICO_TOOLCHAIN_PATH AND DEFINED ENV{PICO_TOOLCHAIN_PATH})
+        set(PICO_TOOLCHAIN_PATH "$ENV{PICO_TOOLCHAIN_PATH}")
+    elseif(NOT DEFINED PICO_TOOLCHAIN_PATH)
+        find_program(_ARM_GCC_EXISTS arm-none-eabi-gcc)
+        if(NOT _ARM_GCC_EXISTS)
+            file(GLOB _XPACK_GCC "$ENV{APPDATA}/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/*/.content/bin")
+            file(GLOB _LOCAL_GCC "$ENV{LOCALAPPDATA}/pico-sdk/toolchain/*/*/bin")
+            set(_TOOLCHAIN_CANDS
+                ${_XPACK_GCC}
+                ${_LOCAL_GCC}
+                "$ENV{USERPROFILE}/.pico-sdk/toolchain/13_3_rel1/bin"
+            )
+            foreach(_cand IN LISTS _TOOLCHAIN_CANDS)
+                if(_cand AND (EXISTS "${_cand}/arm-none-eabi-gcc.exe" OR EXISTS "${_cand}/arm-none-eabi-gcc"))
+                    set(PICO_TOOLCHAIN_PATH "${_cand}")
+                    set(ENV{PICO_TOOLCHAIN_PATH} "${_cand}")
+                    break()
+                endif()
+            endforeach()
+        endif()
+    endif()
+
     include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 endif()
 
@@ -230,6 +281,50 @@ endif()
 # ----------------------------------------------
 # Post-build
 # ----------------------------------------------
+
+# ----------------------------------------------
+# Standalone PQC Test Target (Phase 3+)
+# ----------------------------------------------
+option(QSAC_BUILD_TESTS "Build PQC standalone unit test binary" ON)
+
+if(QSAC_BUILD_TESTS)
+    set(QSAC_TEST_SOURCES
+        tests/test_pqc_standalone.c
+        src/crypto/fips202.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_cbd.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_indcpa.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_kem.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_ntt.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_poly.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_polyvec.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_reduce.c
+        src/crypto/pqc/mlkem512/CRYPTO_PQC_MLKEM512_verify.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_ntt.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_packing.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_poly.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_polyvec.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_reduce.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_rounding.c
+        src/crypto/pqc/mldsa44/CRYPTO_PQC_MLDSA44_sign.c
+    )
+
+    add_executable(test_pqc_standalone ${QSAC_TEST_SOURCES})
+
+    target_include_directories(test_pqc_standalone PRIVATE
+        src/
+        src/crypto
+        src/crypto/pqc/mlkem512
+        src/crypto/pqc/mldsa44
+        tests/
+    )
+
+    if(QSAC_TARGET_PICO AND QSAC_PICO_SDK_AVAILABLE)
+        target_link_libraries(test_pqc_standalone PRIVATE pico_stdlib)
+        pico_enable_stdio_usb(test_pqc_standalone 1)
+        pico_enable_stdio_uart(test_pqc_standalone 1)
+        pico_add_extra_outputs(test_pqc_standalone)
+    endif()
+endif()
 
 if(QSAC_TARGET_PICO AND QSAC_PICO_SDK_AVAILABLE)
     # Pico: pico_add_extra_outputs already generates .uf2

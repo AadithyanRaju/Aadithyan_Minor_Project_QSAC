@@ -56,8 +56,38 @@ from pqc.mldsa44 import mldsa44_keypair, mldsa44_sign, mldsa44_verify
 from pqc.mlkem512 import mlkem512_encaps
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-UF2_PATH = WORKSPACE_ROOT / "firmware" / "build-pico" / "qsac_firmware.uf2"
-PICOTOOL_PATH = Path("C:/Users/aadit/Desktop/pico/tools/picotool-sdk/picotool/picotool.exe")
+
+def _find_uf2() -> Path:
+    candidates = [
+        WORKSPACE_ROOT / "build-pico" / "qsac_firmware.uf2",
+        WORKSPACE_ROOT / "build" / "qsac_firmware.uf2",
+        WORKSPACE_ROOT / "firmware" / "build-pico" / "qsac_firmware.uf2",
+        WORKSPACE_ROOT / "firmware" / "build" / "qsac_firmware.uf2",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return candidates[0]
+
+UF2_PATH = _find_uf2()
+
+def _find_picotool() -> Path:
+    if os.environ.get("PICOTOOL_PATH") and Path(os.environ["PICOTOOL_PATH"]).exists():
+        return Path(os.environ["PICOTOOL_PATH"])
+    which_p = shutil.which("picotool")
+    if which_p:
+        return Path(which_p)
+    candidates = [
+        WORKSPACE_ROOT / "tools" / "picotool" / "picotool.exe",
+        Path.home() / "Desktop" / "pico" / "tools" / "picotool-sdk" / "picotool" / "picotool.exe",
+        Path.home() / ".pico-sdk" / "picotool" / "2.0.0" / "picotool" / "picotool.exe",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return Path("picotool")
+
+PICOTOOL_PATH = _find_picotool()
 
 PHYSICAL_PINOUT = [
     {"pin": 9,  "gpio": "GP6",  "label": "QSAC_STATUS_PIN_SYS_READY",   "expected": "HIGH (3.3V)", "description": "System initialized and crypto core ready"},
@@ -120,12 +150,27 @@ def reboot_pico_to_bootsel(port: str) -> bool:
         return False
 
 
+def copy_uf2_to_drive(src: Path, dst: Path):
+    """Safely writes UF2 image to RP2040 flash, tolerating instantaneous USB dismount."""
+    try:
+        with open(src, 'rb') as fsrc:
+            with open(dst, 'wb') as fdst:
+                while True:
+                    chunk = fsrc.read(65536)
+                    if not chunk:
+                        break
+                    fdst.write(chunk)
+                fdst.flush()
+    except (OSError, PermissionError):
+        # RP2040 unmounts as soon as the final sector is committed
+        pass
+
 def flash_firmware(port: str | None = None, wait_timeout: float = 15.0) -> bool:
     """Flashes the latest qsac_firmware.uf2 to the connected RP2040."""
     print("\n── [Step 1] Physical Firmware Flash (RP2040) ──")
     if not UF2_PATH.exists():
         print(f"[-] Firmware file not found: {UF2_PATH}")
-        print("    Run: ninja -C firmware/build-pico to build the binary.")
+        print("    Run: cmake --build --preset pico (or ninja -C build-pico) to build the binary.")
         return False
 
     print(f"  Firmware binary : {UF2_PATH} ({UF2_PATH.stat().st_size:,} bytes)")
@@ -141,10 +186,10 @@ def flash_firmware(port: str | None = None, wait_timeout: float = 15.0) -> bool:
             print(f"[+] Found Pico in BOOTSEL mode on drive: {drive}")
             dest = Path(drive) / "qsac_firmware.uf2"
             print(f"    Copying {UF2_PATH.name} -> {dest} ...", end="", flush=True)
-            shutil.copy2(UF2_PATH, dest)
+            copy_uf2_to_drive(UF2_PATH, dest)
             print(" DONE!")
             print("[+] Pico has accepted the UF2 image and is rebooting into QSAC firmware.")
-            time.sleep(2.0)
+            time.sleep(3.5)
             return True
 
         # 2. Check if running firmware is on COM port and trigger 1200-baud reboot
@@ -158,10 +203,10 @@ def flash_firmware(port: str | None = None, wait_timeout: float = 15.0) -> bool:
                 if drive:
                     dest = Path(drive) / "qsac_firmware.uf2"
                     print(f"    Copying {UF2_PATH.name} -> {dest} ...", end="", flush=True)
-                    shutil.copy2(UF2_PATH, dest)
+                    copy_uf2_to_drive(UF2_PATH, dest)
                     print(" DONE!")
                     print("[+] Pico rebooting with new firmware.")
-                    time.sleep(2.0)
+                    time.sleep(3.5)
                     return True
                 time.sleep(0.5)
 
@@ -340,7 +385,13 @@ def run_full_physical_check(port: str = None, auto_bench: bool = False) -> dict:
         return summary
 
     # 6. Ping check
-    summary["ping_check"] = server.ping()
+    ping_ok = False
+    for attempt in range(4):
+        if server.ping():
+            ping_ok = True
+            break
+        time.sleep(1.0)
+    summary["ping_check"] = ping_ok
     if not summary["ping_check"]:
         print("[-] Pico failed to respond to OP_PING. Aborting protocol checks.")
         return summary

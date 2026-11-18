@@ -19,7 +19,12 @@ if hasattr(sys.stdout, 'reconfigure'):
 if hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+_this_dir = os.path.dirname(os.path.abspath(__file__))
+_tools_dir = os.path.abspath(os.path.join(_this_dir, '..'))
+if _this_dir not in sys.path:
+    sys.path.insert(0, _this_dir)
+if _tools_dir not in sys.path:
+    sys.path.insert(0, _tools_dir)
 
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
@@ -75,8 +80,14 @@ class QsacHostServer:
             print("\nAvailable Serial Ports:")
             for i, p in enumerate(ports):
                 print(f"  [{i + 1}] {p.device} — {p.description}")
-            choice = input(f"\nSelect port [1-{len(ports)}] (default 1): ").strip()
-            idx = int(choice) - 1 if choice.isdigit() and 1 <= int(choice) <= len(ports) else 0
+            if not sys.stdin.isatty():
+                idx = 0
+            else:
+                try:
+                    choice = input(f"\nSelect port [1-{len(ports)}] (default 1): ").strip()
+                    idx = int(choice) - 1 if choice.isdigit() and 1 <= int(choice) <= len(ports) else 0
+                except (EOFError, KeyboardInterrupt):
+                    idx = 0
             self.port = ports[idx].device
 
         print(f"[+] Connecting to {self.port} at {self.baudrate} baud...")
@@ -90,6 +101,13 @@ class QsacHostServer:
         except Exception as e:
             print(f"[-] Failed to open {self.port}: {e}")
             return False
+
+    def disconnect(self):
+        if hasattr(self, 'ser') and self.ser and self.ser.is_open:
+            self.ser.close()
+
+    def close(self):
+        self.disconnect()
 
     def send_frame(self, opcode: int, payload: bytes = b''):
         frame = encode_frame(opcode, self.seq, payload)

@@ -2,12 +2,59 @@ import glob
 import os
 import subprocess
 import re
+import shutil
+from pathlib import Path
 
-objdump_path = r"C:\Users\aadit\AppData\Roaming\xPacks\@xpack-dev-tools\arm-none-eabi-gcc\15.2.1-1.1.1\.content\bin\arm-none-eabi-objdump.exe"
-elf_path = r"c:\Users\aadit\Desktop\QSAC---Microcontrollers\firmware\build-pico\qsac_firmware.elf"
+SCRIPT_DIR = Path(__file__).resolve().parent
+WORKSPACE_ROOT = SCRIPT_DIR.parent.parent
+
+def find_objdump() -> str:
+    which_objdump = shutil.which("arm-none-eabi-objdump")
+    if which_objdump:
+        return which_objdump
+    if os.environ.get("PICO_TOOLCHAIN_PATH"):
+        p = Path(os.environ["PICO_TOOLCHAIN_PATH"]) / ("arm-none-eabi-objdump.exe" if os.name == 'nt' else "arm-none-eabi-objdump")
+        if p.exists():
+            return str(p)
+    candidates = [
+        Path(os.environ.get("APPDATA", "")) / "xPacks" / "@xpack-dev-tools" / "arm-none-eabi-gcc" / "15.2.1-1.1.1" / ".content" / "bin" / "arm-none-eabi-objdump.exe",
+        Path.home() / ".pico-sdk" / "toolchain" / "13_3_rel1" / "bin" / "arm-none-eabi-objdump.exe",
+    ]
+    for c in candidates:
+        if c.exists():
+            return str(c)
+    return "arm-none-eabi-objdump"
+
+objdump_path = find_objdump()
+
+# Dynamic detection of build directory and ELF
+build_candidates = [
+    WORKSPACE_ROOT / "build-pico",
+    WORKSPACE_ROOT / "build",
+    WORKSPACE_ROOT / "firmware" / "build-pico",
+    WORKSPACE_ROOT / "firmware" / "build",
+]
+
+elf_path = None
+base_dir = None
+for b in build_candidates:
+    cand_elf = b / "qsac_firmware.elf"
+    cand_su = b / "CMakeFiles" / "qsac_firmware.dir"
+    if cand_elf.exists():
+        elf_path = str(cand_elf)
+        base_dir = str(cand_su)
+        break
+
+if not elf_path:
+    elf_path = str(WORKSPACE_ROOT / "build-pico" / "qsac_firmware.elf")
+    base_dir = str(WORKSPACE_ROOT / "build-pico" / "CMakeFiles" / "qsac_firmware.dir")
+
+if not os.path.exists(elf_path):
+    print(f"[-] ELF binary not found: {elf_path}")
+    print("    Please compile the project first (e.g., cmake --build --preset pico).")
+    exit(1)
 
 # Read all .su files
-base_dir = r'c:\Users\aadit\Desktop\QSAC---Microcontrollers\firmware\build-pico\CMakeFiles\qsac_firmware.dir'
 su_files = glob.glob(os.path.join(base_dir, '**', '*.su'), recursive=True)
 
 stack_sizes = {}
